@@ -11,5 +11,5 @@ test("renders", () => {
         </MemoryRouter>,
     )
 
-    expect(screen.getByText("trmnl kids schedules")).toBeInTheDocument()
+    expect(screen.getByText("trmnl")).toBeInTheDocument()
 })

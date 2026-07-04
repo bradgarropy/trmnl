@@ -5,7 +5,7 @@ export const loader = () => {
 const Route = () => {
     return (
         <>
-            <title>📋 trmnl kids schedules | sentry</title>
+            <title>📋 trmnl | sentry</title>
             <h2 className="text-2xl font-bold">Sentry | Loader Error</h2>
         </>
     )

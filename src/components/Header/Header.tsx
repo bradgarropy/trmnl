@@ -3,7 +3,7 @@ import Navigation from "~/components/Navigation"
 const Header = () => {
     return (
         <header className="flex items-center justify-between px-8 py-12">
-            <h1 className="text-3xl font-bold">trmnl kids schedules</h1>
+            <h1 className="text-3xl font-bold">trmnl</h1>
             <Navigation />
         </header>
     )

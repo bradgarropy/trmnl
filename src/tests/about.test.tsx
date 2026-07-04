@@ -6,6 +6,6 @@ import Route from "~/routes/about"
 test("renders", () => {
     render(<Route />)
 
-    expect(document.title).toEqual("📋 trmnl kids schedules | about")
+    expect(document.title).toEqual("📋 trmnl | about")
     expect(screen.getByText("About")).toBeInTheDocument()
 })
