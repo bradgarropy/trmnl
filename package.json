@@ -1,7 +1,7 @@
 {
-    "name": "react-router-starter",
+    "name": "trmnl-kids-schedules",
     "version": "6.0.0",
-    "description": "📍 react router starter",
+    "description": "📋 trmnl kids schedules",
     "type": "module",
     "keywords": [
         "typescript",
@@ -15,9 +15,9 @@
         "tailwind",
         "hacktoberfest"
     ],
-    "homepage": "https://github.com/bradgarropy/react-router-starter",
+    "homepage": "https://github.com/bradgarropy/trmnl-kids-schedules",
     "bugs": {
-        "url": "https://github.com/bradgarropy/react-router-starter/issues"
+        "url": "https://github.com/bradgarropy/trmnl-kids-schedules/issues"
     },
     "license": "MIT",
     "author": {
@@ -27,7 +27,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/bradgarropy/react-router-starter"
+        "url": "https://github.com/bradgarropy/trmnl-kids-schedules"
     },
     "scripts": {
         "dev": "react-router dev",
