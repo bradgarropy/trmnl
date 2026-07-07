@@ -30,25 +30,14 @@ const getCurrentPeriod = (date = new Date()) => {
     return kidsSchedules.periods.find(period => isCurrentPeriod(period, time))
 }
 
-const getNextPeriod = (date = new Date()) => {
-    const time = getTime(date)
-
-    return (
-        kidsSchedules.periods.find(period => period.startsAt > time) ??
-        kidsSchedules.periods[0]
-    )
-}
-
 const loader = () => {
     const period = getCurrentPeriod()
 
     if (!period) {
-        const nextPeriod = getNextPeriod()
-
         return data(
             {
+                TRMNL_SKIP_DISPLAY: true,
                 period: null,
-                nextPeriod: getPeriodDetails(nextPeriod),
                 children: [],
             },
             {status: 200},
@@ -57,12 +46,12 @@ const loader = () => {
 
     return data(
         {
+            TRMNL_SKIP_DISPLAY: false,
             period: getPeriodDetails(period),
-            nextPeriod: null,
             children: period.children,
         },
         {status: 200},
     )
 }
 
-export {getCurrentPeriod, getNextPeriod, loader}
+export {getCurrentPeriod, loader}
