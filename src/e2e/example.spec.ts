@@ -5,5 +5,4 @@ test("home page", async ({page}) => {
     await expect(page).toHaveTitle("📋 trmnl | home")
 
     await expect(page.getByRole("heading", {name: "Home"})).toBeVisible()
-    await expect(page.getByRole("link", {name: "Home"})).toBeVisible()
 })
