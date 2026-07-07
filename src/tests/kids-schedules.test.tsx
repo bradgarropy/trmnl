@@ -56,3 +56,18 @@ test("skips display outside configured periods", () => {
         children: [],
     })
 })
+
+test.each([
+    ["05:59", "2026-07-06T10:59:00.000Z", undefined],
+    ["06:00", "2026-07-06T11:00:00.000Z", "Morning"],
+    ["07:59", "2026-07-06T12:59:00.000Z", "Morning"],
+    ["08:00", "2026-07-06T13:00:00.000Z", undefined],
+    ["18:59", "2026-07-06T23:59:00.000Z", undefined],
+    ["19:00", "2026-07-07T00:00:00.000Z", "Night"],
+    ["20:59", "2026-07-07T01:59:00.000Z", "Night"],
+    ["21:00", "2026-07-07T02:00:00.000Z", undefined],
+])("returns the correct period at %s", (_, date, expectedPeriod) => {
+    const period = getCurrentPeriod(new Date(date))
+
+    expect(period?.name).toBe(expectedPeriod)
+})
