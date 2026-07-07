@@ -1,6 +1,6 @@
 import type {Period} from "~/types"
 
-const kidsSchedules: {periods: Period[]} = {
+const kidsSchedules: {periods: [Period, ...Period[]]} = {
     periods: [
         {
             name: "Morning",

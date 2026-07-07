@@ -18,22 +18,51 @@ const isCurrentPeriod = (period: Period, time: string) => {
     return time >= period.startsAt && time < period.endsAt
 }
 
+const getPeriodDetails = (period: Period) => {
+    const {children, ...periodDetails} = period
+
+    return periodDetails
+}
+
 const getCurrentPeriod = (date = new Date()) => {
     const time = getTime(date)
 
     return kidsSchedules.periods.find(period => isCurrentPeriod(period, time))
 }
 
+const getNextPeriod = (date = new Date()) => {
+    const time = getTime(date)
+
+    return (
+        kidsSchedules.periods.find(period => period.startsAt > time) ??
+        kidsSchedules.periods[0]
+    )
+}
+
 const loader = () => {
     const period = getCurrentPeriod()
 
     if (!period) {
-        return data({period: null, children: []}, {status: 200})
+        const nextPeriod = getNextPeriod()
+
+        return data(
+            {
+                period: null,
+                nextPeriod: getPeriodDetails(nextPeriod),
+                children: [],
+            },
+            {status: 200},
+        )
     }
 
-    const {children, ...periodDetails} = period
-
-    return data({period: periodDetails, children}, {status: 200})
+    return data(
+        {
+            period: getPeriodDetails(period),
+            nextPeriod: null,
+            children: period.children,
+        },
+        {status: 200},
+    )
 }
 
-export {getCurrentPeriod, loader}
+export {getCurrentPeriod, getNextPeriod, loader}

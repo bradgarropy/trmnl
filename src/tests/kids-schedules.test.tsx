@@ -1,6 +1,10 @@
 import {afterEach, expect, test, vi} from "vitest"
 
-import {getCurrentPeriod, loader} from "~/routes/api/kids-schedules"
+import {
+    getCurrentPeriod,
+    getNextPeriod,
+    loader,
+} from "~/routes/api/kids-schedules"
 
 afterEach(() => {
     vi.useRealTimers()
@@ -19,6 +23,7 @@ test("returns the morning kids schedule", () => {
             startsAt: "06:00",
             endsAt: "08:00",
         },
+        nextPeriod: null,
         children: [
             {
                 name: "Sofia",
@@ -42,12 +47,30 @@ test("returns the night kids schedule", () => {
     })
 })
 
-test("returns an empty schedule outside configured periods", () => {
+test("returns the next schedule outside configured periods", () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date("2026-07-06T14:00:00.000Z"))
 
     const {data, init} = loader()
 
     expect(init).toMatchObject({status: 200})
-    expect(data).toEqual({period: null, children: []})
+    expect(data).toEqual({
+        period: null,
+        nextPeriod: {
+            name: "Night",
+            startsAt: "19:00",
+            endsAt: "21:00",
+        },
+        children: [],
+    })
+})
+
+test("returns the first schedule as next after all configured periods", () => {
+    const period = getNextPeriod(new Date("2026-07-07T03:00:00.000Z"))
+
+    expect(period).toMatchObject({
+        name: "Morning",
+        startsAt: "06:00",
+        endsAt: "08:00",
+    })
 })
