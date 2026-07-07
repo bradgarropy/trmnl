@@ -1,0 +1,41 @@
+<div class="layout layout--col layout--top gap--large">
+  <div class="flex flex--col gap--xsmall w--full pt--5 pb--5">
+    <span class="title title--large font--bold text--xxxlarge">
+      {{ period.name }}
+    </span>
+    <span class="label label--small text--base text--gray-35">
+      {{ period.startsAt }} - {{ period.endsAt }}
+    </span>
+  </div>
+  <div class="divider pt--0 pb--0"></div>
+  <div class="grid w--full pt--11 pb--11">
+    <div class="row row--center gap--space-between">
+      {% for child in children %}
+      <div class="flex flex--col flex--left pt--0 pb--0 mt--0 mb--0 gap--large">
+        <span class="title font--bold text--xlarge">
+          {{ child.name }}
+        </span>
+        <div class="flex flex--col gap--xsmall">
+          {% for task in child.tasks %}
+          <div class="item">
+            <div class="meta">
+              <span class="index">
+                {{ forloop.index }}
+              </span>
+            </div>
+            <div class="content">
+              <span class="title pt--2 pb--2">
+                {{ task }}
+              </span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<div class="title_bar">
+  <span class="title">Kids Schedules</span>
+</div>

@@ -3,45 +3,50 @@ const kidsSchedules = {
         {
             name: "Morning",
             startsAt: "06:00",
-            endsAt: "11:00",
+            endsAt: "08:00",
             children: [
                 {
                     name: "Sofia",
-                    tasks: ["Restroom", "Brush Teeth"],
+                    tasks: [
+                        "Restroom",
+                        "Brush Teeth",
+                        "Brush Hair",
+                        "Make Bed",
+                    ],
                 },
                 {
                     name: "Justin",
-                    tasks: ["Restroom", "Brush Teeth"],
-                },
-            ],
-        },
-        {
-            name: "Afternoon",
-            startsAt: "15:00",
-            endsAt: "18:00",
-            children: [
-                {
-                    name: "Sofia",
-                    tasks: ["Snack", "Homework"],
-                },
-                {
-                    name: "Justin",
-                    tasks: ["Snack", "Homework"],
+                    tasks: [
+                        "Restroom",
+                        "Brush Teeth",
+                        "Brush Hair",
+                        "Make Bed",
+                    ],
                 },
             ],
         },
         {
             name: "Night",
-            startsAt: "18:00",
+            startsAt: "19:00",
             endsAt: "21:00",
             children: [
                 {
                     name: "Sofia",
-                    tasks: ["Bath", "Pajamas", "Brush Teeth"],
+                    tasks: [
+                        "Pajamas",
+                        "Brush Teeth",
+                        "Floss Teeth",
+                        "Restroom",
+                    ],
                 },
                 {
                     name: "Justin",
-                    tasks: ["Bath", "Pajamas", "Brush Teeth"],
+                    tasks: [
+                        "Pajamas",
+                        "Brush Teeth",
+                        "Floss Teeth",
+                        "Restroom",
+                    ],
                 },
             ],
         },
