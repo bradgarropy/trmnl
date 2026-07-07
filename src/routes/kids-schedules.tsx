@@ -85,7 +85,9 @@ const createConfig = (periods: Period[]): ScheduleConfig => {
 }
 
 const Route = () => {
-    const [config, setConfig] = useState(() => createConfig(kidsSchedules.periods))
+    const [config, setConfig] = useState(() =>
+        createConfig(kidsSchedules.periods),
+    )
 
     const updateKid = (kidIndex: number, name: string) => {
         setConfig(currentConfig => ({
@@ -138,7 +140,10 @@ const Route = () => {
     const addPeriod = () => {
         setConfig(currentConfig => ({
             ...currentConfig,
-            periods: [...currentConfig.periods, createPeriod(currentConfig.kids)],
+            periods: [
+                ...currentConfig.periods,
+                createPeriod(currentConfig.kids),
+            ],
         }))
     }
 
@@ -223,7 +228,7 @@ const Route = () => {
 
     return (
         <>
-            <title>📋 trmnl | kids schedules</title>
+            <title>trmnl | kids schedules</title>
 
             <div className="mx-auto flex max-w-4xl flex-col gap-6 pb-24 sm:gap-8 sm:pb-0">
                 <div>
@@ -275,7 +280,10 @@ const Route = () => {
                                     type="button"
                                     onClick={() => removeKid(kid.id)}
                                 >
-                                    <Trash2 aria-hidden="true" className="size-4" />
+                                    <Trash2
+                                        aria-hidden="true"
+                                        className="size-4"
+                                    />
                                 </Button>
                             </div>
                         ))}
@@ -316,7 +324,8 @@ const Route = () => {
                                                 value={period.name}
                                                 onChange={event =>
                                                     updatePeriod(periodIndex, {
-                                                        name: event.target.value,
+                                                        name: event.target
+                                                            .value,
                                                     })
                                                 }
                                             />
@@ -343,8 +352,8 @@ const Route = () => {
                                                 value={period.endsAt}
                                                 onChange={event =>
                                                     updatePeriod(periodIndex, {
-                                                        endsAt:
-                                                            event.target.value,
+                                                        endsAt: event.target
+                                                            .value,
                                                     })
                                                 }
                                             />
@@ -357,7 +366,9 @@ const Route = () => {
                                         size="icon"
                                         variant="outline"
                                         type="button"
-                                        onClick={() => removePeriod(periodIndex)}
+                                        onClick={() =>
+                                            removePeriod(periodIndex)
+                                        }
                                     >
                                         <Trash2
                                             aria-hidden="true"
@@ -396,16 +407,15 @@ const Route = () => {
                                                                 aria-label={`${kid.name || "Kid"} ${period.name || "period"} task ${taskIndex + 1}`}
                                                                 className="flex-1"
                                                                 value={task}
-                                                                onChange={
-                                                                    event =>
-                                                                        updateTask(
-                                                                            periodIndex,
-                                                                            kid.id,
-                                                                            taskIndex,
-                                                                            event
-                                                                                .target
-                                                                                .value,
-                                                                        )
+                                                                onChange={event =>
+                                                                    updateTask(
+                                                                        periodIndex,
+                                                                        kid.id,
+                                                                        taskIndex,
+                                                                        event
+                                                                            .target
+                                                                            .value,
+                                                                    )
                                                                 }
                                                             />
 
@@ -454,11 +464,7 @@ const Route = () => {
                 </div>
 
                 <div className="bg-background fixed inset-x-0 bottom-0 p-4 sm:static sm:flex sm:justify-end sm:bg-transparent sm:p-0">
-                    <Button
-                        className="w-full sm:w-auto"
-                        type="button"
-                        disabled
-                    >
+                    <Button className="w-full sm:w-auto" type="button" disabled>
                         Save Coming Soon
                     </Button>
                 </div>

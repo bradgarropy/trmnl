@@ -6,6 +6,6 @@ import Route from "~/routes/index"
 test("renders", () => {
     render(<Route />)
 
-    expect(document.title).toEqual("📋 trmnl | home")
+    expect(document.title).toEqual("trmnl | home")
     expect(screen.getByText("Home")).toBeInTheDocument()
 })

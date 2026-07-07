@@ -7,7 +7,7 @@ import Route from "~/routes/kids-schedules"
 test("renders the kids schedules editor", () => {
     render(<Route />)
 
-    expect(document.title).toEqual("📋 trmnl | kids schedules")
+    expect(document.title).toEqual("trmnl | kids schedules")
     expect(screen.getByRole("heading", {name: "Kids Schedules"})).toBeVisible()
     expect(screen.getByRole("heading", {name: "Kids"})).toBeVisible()
     expect(screen.getByDisplayValue("Morning")).toBeVisible()

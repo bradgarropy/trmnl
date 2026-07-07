@@ -9,9 +9,13 @@ const App = () => {
     return (
         <html lang="en">
             <head>
-                <title>📋 trmnl</title>
+                <title>trmnl</title>
                 <link rel="stylesheet" href={tailwindStyles} />
-                <link rel="icon" type="image/png" href="/favicon.png" />
+                <link
+                    rel="icon"
+                    type="image/svg+xml"
+                    href="https://trmnl.com/assets/trmnl--glyph-black-4ca602fd.svg"
+                />
                 <meta charSet="utf-8" />
 
                 <meta
@@ -50,9 +54,9 @@ export const ErrorBoundary = () => {
     return (
         <html lang="en">
             <head>
-                <title>📋 trmnl</title>
+                <title>trmnl</title>
                 <link rel="stylesheet" href={tailwindStyles} />
-                <link rel="icon" type="image/png" href="/favicon.png" />
+                <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
                 <meta charSet="utf-8" />
 
                 <meta
