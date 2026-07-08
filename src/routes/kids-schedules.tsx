@@ -1,10 +1,22 @@
 import {Trash2} from "lucide-react"
 import {useState} from "react"
+import {
+    type ActionFunctionArgs,
+    data,
+    type LoaderFunctionArgs,
+    useActionData,
+    useLoaderData,
+    useNavigation,
+    useSubmit,
+} from "react-router"
 
 import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
 import {Label} from "~/components/ui/label"
-import {kidsSchedules} from "~/data"
+import {
+    getKidsScheduleConfig,
+    saveKidsScheduleConfig,
+} from "~/kids-schedules.server"
 import type {Child, Kid, KidsScheduleConfig, Range, RangeConfig} from "~/types"
 
 const createId = (value: string, index: number) => {
@@ -67,10 +79,38 @@ const createConfig = (ranges: Range[]): KidsScheduleConfig => {
     }
 }
 
-const Route = () => {
-    const [config, setConfig] = useState(() =>
-        createConfig(kidsSchedules.ranges),
+const emptyConfig: KidsScheduleConfig = {
+    kids: [],
+    ranges: [],
+}
+
+const loader = async ({context}: LoaderFunctionArgs) => {
+    return await getKidsScheduleConfig(context.cloudflare.env.DB)
+}
+
+const action = async ({context, request}: ActionFunctionArgs) => {
+    const formData = await request.formData()
+    const config = formData.get("config")
+
+    if (typeof config !== "string") {
+        return data({success: false}, {status: 400})
+    }
+
+    await saveKidsScheduleConfig(
+        context.cloudflare.env.DB,
+        JSON.parse(config) as KidsScheduleConfig,
     )
+
+    return data({success: true}, {status: 200})
+}
+
+const Route = () => {
+    const loadedConfig = useLoaderData<typeof loader>()
+    const actionData = useActionData<typeof action>()
+    const navigation = useNavigation()
+    const submit = useSubmit()
+    const [config, setConfig] = useState(loadedConfig ?? emptyConfig)
+    const isSaving = navigation.state !== "idle"
 
     const updateKid = (kidIndex: number, name: string) => {
         setConfig(currentConfig => ({
@@ -204,6 +244,10 @@ const Route = () => {
                     : range,
             ),
         }))
+    }
+
+    const saveConfig = () => {
+        submit({config: JSON.stringify(config)}, {method: "post"})
     }
 
     return (
@@ -442,13 +486,25 @@ const Route = () => {
                 </div>
 
                 <div className="bg-background fixed inset-x-0 bottom-0 p-4 sm:static sm:flex sm:justify-end sm:bg-transparent sm:p-0">
-                    <Button className="w-full sm:w-auto" type="button" disabled>
-                        Save Coming Soon
+                    <Button
+                        className="w-full sm:w-auto"
+                        type="button"
+                        disabled={isSaving}
+                        onClick={saveConfig}
+                    >
+                        {isSaving ? "Saving" : "Save"}
                     </Button>
                 </div>
+
+                {actionData?.success ? (
+                    <p className="sr-only" role="status">
+                        Kids schedules saved.
+                    </p>
+                ) : null}
             </div>
         </>
     )
 }
 
+export {action, createConfig, loader}
 export default Route

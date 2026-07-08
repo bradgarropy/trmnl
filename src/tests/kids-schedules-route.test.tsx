@@ -1,14 +1,41 @@
-import {render, screen} from "@testing-library/react"
+import {render, screen, waitFor} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import {expect, test} from "vitest"
+import {type ActionFunction,createRoutesStub} from "react-router"
+import {expect, test, vi} from "vitest"
 
-import Route from "~/routes/kids-schedules"
+import {kidsSchedules} from "~/data"
+import Route, {createConfig} from "~/routes/kids-schedules"
+import type {KidsScheduleConfig} from "~/types"
 
-test("renders the kids schedules editor", () => {
-    render(<Route />)
+const config = createConfig(kidsSchedules.ranges)
 
-    expect(document.title).toEqual("trmnl | kids schedules")
-    expect(screen.getByRole("heading", {name: "Kids Schedules"})).toBeVisible()
+const renderRoute = (
+    routeConfig: KidsScheduleConfig | null = config,
+    action: ReturnType<typeof vi.fn> = vi.fn(async () => ({success: true})),
+) => {
+    const Stub = createRoutesStub([
+        {
+            path: "/",
+            Component: Route,
+            loader: () => routeConfig,
+            action: action as ActionFunction,
+        },
+    ])
+
+    render(<Stub />)
+
+    return {action}
+}
+
+test("renders the kids schedules editor", async () => {
+    renderRoute()
+
+    await waitFor(() =>
+        expect(document.title).toEqual("trmnl | kids schedules"),
+    )
+    expect(
+        await screen.findByRole("heading", {name: "Kids Schedules"}),
+    ).toBeVisible()
     expect(screen.getByRole("heading", {name: "Kids"})).toBeVisible()
     expect(screen.getByDisplayValue("Morning")).toBeVisible()
     expect(screen.getByDisplayValue("Night")).toBeVisible()
@@ -18,17 +45,15 @@ test("renders the kids schedules editor", () => {
     expect(screen.getAllByRole("heading", {name: "Justin"})).toHaveLength(2)
     expect(screen.getAllByDisplayValue("Make Bed")).toHaveLength(2)
     expect(screen.getAllByDisplayValue("Floss Teeth")).toHaveLength(2)
-    expect(
-        screen.getByRole("button", {name: "Save Coming Soon"}),
-    ).toBeDisabled()
+    expect(screen.getByRole("button", {name: "Save"})).toBeEnabled()
 })
 
 test("edits schedule fields locally", async () => {
     const user = userEvent.setup()
 
-    render(<Route />)
+    renderRoute()
 
-    const morning = screen.getByDisplayValue("Morning")
+    const morning = await screen.findByDisplayValue("Morning")
     await user.clear(morning)
     await user.type(morning, "Before School")
 
@@ -38,9 +63,9 @@ test("edits schedule fields locally", async () => {
 test("adds and removes ranges, kids, and tasks", async () => {
     const user = userEvent.setup()
 
-    render(<Route />)
+    renderRoute()
 
-    await user.click(screen.getByRole("button", {name: "Add Range"}))
+    await user.click(await screen.findByRole("button", {name: "Add Range"}))
     expect(screen.getAllByDisplayValue("06:00")).toHaveLength(2)
 
     await user.click(screen.getByRole("button", {name: "Add Kid"}))
@@ -57,7 +82,9 @@ test("adds and removes ranges, kids, and tasks", async () => {
 test("edits times, kids, and tasks locally", async () => {
     const user = userEvent.setup()
 
-    render(<Route />)
+    renderRoute()
+
+    await screen.findByDisplayValue("Morning")
 
     const startsAt = screen.getAllByDisplayValue("06:00")[0]
     await user.clear(startsAt)
@@ -80,4 +107,32 @@ test("edits times, kids, and tasks locally", async () => {
     expect(screen.getByDisplayValue("Sof")).toBeVisible()
     expect(screen.getAllByRole("heading", {name: "Sof"})).toHaveLength(2)
     expect(screen.getByDisplayValue("Shoes")).toBeVisible()
+})
+
+test("saves the edited config", async () => {
+    const user = userEvent.setup()
+    const action = vi.fn(async ({request}: {request: Request}) => {
+        const formData = await request.formData()
+        return {
+            config: JSON.parse(String(formData.get("config"))),
+            success: true,
+        }
+    })
+
+    renderRoute(config, action)
+
+    const morning = await screen.findByDisplayValue("Morning")
+    await user.clear(morning)
+    await user.type(morning, "Before School")
+    await user.click(screen.getByRole("button", {name: "Save"}))
+
+    await waitFor(() => expect(action).toHaveBeenCalledOnce())
+    await expect(action.mock.results[0]?.value).resolves.toEqual({
+        config: expect.objectContaining({
+            ranges: expect.arrayContaining([
+                expect.objectContaining({name: "Before School"}),
+            ]),
+        }),
+        success: true,
+    })
 })
