@@ -187,15 +187,16 @@ test("saves the edited config", async () => {
 test("shows save errors", async () => {
     const user = userEvent.setup()
 
-    renderRoute(config, vi.fn(async () => ({success: false})))
+    renderRoute(
+        config,
+        vi.fn(async () => ({success: false})),
+    )
 
     const morning = await screen.findByDisplayValue("Morning")
     await user.clear(morning)
     await user.type(morning, "Before School")
     await user.click(screen.getByRole("button", {name: "Save"}))
 
-    await waitFor(() =>
-        expect(toast.error).toHaveBeenCalledWith("Save failed"),
-    )
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Save failed"))
     expect(screen.getByRole("button", {name: "Save"})).toBeEnabled()
 })
