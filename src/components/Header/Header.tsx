@@ -1,4 +1,4 @@
-const trmnlLogoUrl = "https://trmnl.com/assets/trmnl--glyph-black-4ca602fd.svg"
+import {TRMNL_LOGO_URL} from "~/constants"
 
 const Header = () => {
     return (
@@ -9,7 +9,7 @@ const Header = () => {
                 rel="noreferrer"
                 target="_blank"
             >
-                <img alt="" className="size-8" src={trmnlLogoUrl} />
+                <img alt="" className="size-8" src={TRMNL_LOGO_URL} />
             </a>
 
             <a

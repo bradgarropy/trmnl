@@ -3,6 +3,7 @@ import {Links, Meta, Outlet, Scripts, ScrollRestoration} from "react-router"
 import Error from "~/components/ErrorBoundary"
 import Footer from "~/components/Footer"
 import Header from "~/components/Header"
+import {TRMNL_LOGO_URL} from "~/constants"
 import tailwindStyles from "~/styles/tailwind.css?url"
 
 const App = () => {
@@ -14,7 +15,7 @@ const App = () => {
                 <link
                     rel="icon"
                     type="image/svg+xml"
-                    href="https://trmnl.com/assets/trmnl--glyph-black-4ca602fd.svg"
+                    href={TRMNL_LOGO_URL}
                 />
                 <meta charSet="utf-8" />
 
@@ -56,7 +57,11 @@ export const ErrorBoundary = () => {
             <head>
                 <title>trmnl</title>
                 <link rel="stylesheet" href={tailwindStyles} />
-                <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+                <link
+                    rel="icon"
+                    type="image/svg+xml"
+                    href={TRMNL_LOGO_URL}
+                />
                 <meta charSet="utf-8" />
 
                 <meta
