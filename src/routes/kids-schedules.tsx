@@ -1,5 +1,5 @@
 import {Trash2} from "lucide-react"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {
     type ActionFunctionArgs,
     data,
@@ -9,6 +9,7 @@ import {
     useNavigation,
     useSubmit,
 } from "react-router"
+import {toast} from "sonner"
 
 import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
@@ -111,6 +112,19 @@ const Route = () => {
     const submit = useSubmit()
     const [config, setConfig] = useState(loadedConfig ?? emptyConfig)
     const isSaving = navigation.state !== "idle"
+
+    useEffect(() => {
+        if (!actionData) {
+            return
+        }
+
+        if (actionData.success) {
+            toast.success("Saved")
+            return
+        }
+
+        toast.error("Save failed")
+    }, [actionData])
 
     const updateKid = (kidIndex: number, name: string) => {
         setConfig(currentConfig => ({
@@ -485,7 +499,7 @@ const Route = () => {
                     ))}
                 </div>
 
-                <div className="bg-background fixed inset-x-0 bottom-0 p-4 sm:static sm:flex sm:justify-end sm:bg-transparent sm:p-0">
+                <div className="bg-background fixed inset-x-0 bottom-0 flex items-center justify-end p-4 sm:static sm:bg-transparent sm:p-0">
                     <Button
                         className="w-full sm:w-auto"
                         type="button"
@@ -496,11 +510,6 @@ const Route = () => {
                     </Button>
                 </div>
 
-                {actionData?.success ? (
-                    <p className="sr-only" role="status">
-                        Kids schedules saved.
-                    </p>
-                ) : null}
             </div>
         </>
     )

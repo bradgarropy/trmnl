@@ -1,7 +1,15 @@
 import {render, screen, waitFor} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import {type ActionFunction, createRoutesStub} from "react-router"
-import {expect, test, vi} from "vitest"
+import {toast} from "sonner"
+import {afterEach, expect, test, vi} from "vitest"
+
+vi.mock("sonner", () => ({
+    toast: {
+        error: vi.fn(),
+        success: vi.fn(),
+    },
+}))
 
 import Route, {createConfig} from "~/routes/kids-schedules"
 import type {KidsScheduleConfig, Range} from "~/types"
@@ -40,6 +48,10 @@ const ranges: [Range, ...Range[]] = [
 ]
 
 const config = createConfig(ranges)
+
+afterEach(() => {
+    vi.clearAllMocks()
+})
 
 const renderRoute = (
     routeConfig: KidsScheduleConfig | null = config,
@@ -167,4 +179,18 @@ test("saves the edited config", async () => {
         }),
         success: true,
     })
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Saved"))
+})
+
+test("shows save errors", async () => {
+    const user = userEvent.setup()
+
+    renderRoute(config, vi.fn(async () => ({success: false})))
+
+    await screen.findByDisplayValue("Morning")
+    await user.click(screen.getByRole("button", {name: "Save"}))
+
+    await waitFor(() =>
+        expect(toast.error).toHaveBeenCalledWith("Save failed"),
+    )
 })

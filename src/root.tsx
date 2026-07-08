@@ -3,6 +3,7 @@ import {Links, Meta, Outlet, Scripts, ScrollRestoration} from "react-router"
 import Error from "~/components/ErrorBoundary"
 import Footer from "~/components/Footer"
 import Header from "~/components/Header"
+import {Toaster} from "~/components/ui/sonner"
 import {TRMNL_LOGO_URL} from "~/constants"
 import tailwindStyles from "~/styles/tailwind.css?url"
 
@@ -40,6 +41,7 @@ const App = () => {
                     <Footer />
                 </div>
 
+                <Toaster position="top-center" />
                 <ScrollRestoration />
                 <Scripts />
             </body>
