@@ -1,5 +1,5 @@
 import {Trash2} from "lucide-react"
-import {useEffect, useState} from "react"
+import {useEffect, useRef, useState} from "react"
 import {
     type ActionFunctionArgs,
     data,
@@ -85,6 +85,10 @@ const emptyConfig: KidsScheduleConfig = {
     ranges: [],
 }
 
+const serializeConfig = (config: KidsScheduleConfig) => {
+    return JSON.stringify(config)
+}
+
 const loader = async ({context}: LoaderFunctionArgs) => {
     return await getKidsScheduleConfig(context.cloudflare.env.DB)
 }
@@ -111,7 +115,10 @@ const Route = () => {
     const navigation = useNavigation()
     const submit = useSubmit()
     const [config, setConfig] = useState(loadedConfig ?? emptyConfig)
+    const [savedConfig, setSavedConfig] = useState(loadedConfig ?? emptyConfig)
+    const submittedConfig = useRef<KidsScheduleConfig | null>(null)
     const isSaving = navigation.state !== "idle"
+    const isDirty = serializeConfig(config) !== serializeConfig(savedConfig)
 
     useEffect(() => {
         if (!actionData) {
@@ -119,6 +126,11 @@ const Route = () => {
         }
 
         if (actionData.success) {
+            if (submittedConfig.current) {
+                setSavedConfig(submittedConfig.current)
+            }
+
+            submittedConfig.current = null
             toast.success("Saved")
             return
         }
@@ -261,7 +273,12 @@ const Route = () => {
     }
 
     const saveConfig = () => {
-        submit({config: JSON.stringify(config)}, {method: "post"})
+        if (!isDirty) {
+            return
+        }
+
+        submittedConfig.current = config
+        submit({config: serializeConfig(config)}, {method: "post"})
     }
 
     return (
@@ -503,13 +520,12 @@ const Route = () => {
                     <Button
                         className="w-full sm:w-auto"
                         type="button"
-                        disabled={isSaving}
+                        disabled={isSaving || !isDirty}
                         onClick={saveConfig}
                     >
                         {isSaving ? "Saving" : "Save"}
                     </Button>
                 </div>
-
             </div>
         </>
     )

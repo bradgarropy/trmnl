@@ -89,7 +89,7 @@ test("renders the kids schedules editor", async () => {
     expect(screen.getAllByRole("heading", {name: "Justin"})).toHaveLength(2)
     expect(screen.getAllByDisplayValue("Make Bed")).toHaveLength(2)
     expect(screen.getAllByDisplayValue("Floss Teeth")).toHaveLength(2)
-    expect(screen.getByRole("button", {name: "Save"})).toBeEnabled()
+    expect(screen.getByRole("button", {name: "Save"})).toBeDisabled()
 })
 
 test("edits schedule fields locally", async () => {
@@ -102,6 +102,7 @@ test("edits schedule fields locally", async () => {
     await user.type(morning, "Before School")
 
     expect(screen.getByDisplayValue("Before School")).toBeVisible()
+    expect(screen.getByRole("button", {name: "Save"})).toBeEnabled()
 })
 
 test("adds and removes ranges, kids, and tasks", async () => {
@@ -180,6 +181,7 @@ test("saves the edited config", async () => {
         success: true,
     })
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Saved"))
+    expect(screen.getByRole("button", {name: "Save"})).toBeDisabled()
 })
 
 test("shows save errors", async () => {
@@ -187,10 +189,13 @@ test("shows save errors", async () => {
 
     renderRoute(config, vi.fn(async () => ({success: false})))
 
-    await screen.findByDisplayValue("Morning")
+    const morning = await screen.findByDisplayValue("Morning")
+    await user.clear(morning)
+    await user.type(morning, "Before School")
     await user.click(screen.getByRole("button", {name: "Save"}))
 
     await waitFor(() =>
         expect(toast.error).toHaveBeenCalledWith("Save failed"),
     )
+    expect(screen.getByRole("button", {name: "Save"})).toBeEnabled()
 })
