@@ -1,35 +1,43 @@
+import type {LoaderFunctionArgs} from "react-router"
 import {afterEach, expect, test, vi} from "vitest"
 
 import {getCurrentRange, loader} from "~/routes/api/kids-schedules"
+import type {KidsScheduleConfig} from "~/types"
 
 afterEach(() => {
     vi.useRealTimers()
 })
 
-test("returns the morning kids schedule", () => {
+const createD1Mock = (row?: {value: string} | null) => {
+    const first = vi.fn(async () => row)
+    const bind = vi.fn(() => ({first}))
+    const prepare = vi.fn(() => ({bind}))
+
+    return {prepare} as unknown as D1Database
+}
+
+const createLoaderArgs = (db = createD1Mock(null)) => {
+    return {
+        context: {
+            cloudflare: {
+                env: {DB: db} as Env,
+                ctx: {} as ExecutionContext,
+            },
+        },
+    } as LoaderFunctionArgs
+}
+
+test("skips display when config does not exist", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date("2026-07-06T11:30:00.000Z"))
 
-    const {data, init} = loader()
+    const {data, init} = await loader(createLoaderArgs())
 
     expect(init).toMatchObject({status: 200})
     expect(data).toEqual({
-        TRMNL_SKIP_DISPLAY: false,
-        range: {
-            name: "Morning",
-            startsAt: "06:00",
-            endsAt: "08:00",
-        },
-        children: [
-            {
-                name: "Sofia",
-                tasks: ["Restroom", "Brush Teeth", "Brush Hair", "Make Bed"],
-            },
-            {
-                name: "Justin",
-                tasks: ["Restroom", "Brush Teeth", "Brush Hair", "Make Bed"],
-            },
-        ],
+        TRMNL_SKIP_DISPLAY: true,
+        range: null,
+        children: [],
     })
 })
 
@@ -43,11 +51,75 @@ test("returns the night kids schedule", () => {
     })
 })
 
-test("skips display outside configured ranges", () => {
+test("returns the kids schedule from D1 when config exists", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-07-06T11:30:00.000Z"))
+
+    const config: KidsScheduleConfig = {
+        kids: [
+            {
+                id: "sofia-0",
+                name: "Sofia",
+            },
+        ],
+        ranges: [
+            {
+                name: "Before School",
+                startsAt: "06:00",
+                endsAt: "08:00",
+                tasksByKidId: {
+                    "sofia-0": ["Shoes", "Backpack"],
+                },
+            },
+        ],
+    }
+
+    const {data, init} = await loader(
+        createLoaderArgs(createD1Mock({value: JSON.stringify(config)})),
+    )
+
+    expect(init).toMatchObject({status: 200})
+    expect(data).toEqual({
+        TRMNL_SKIP_DISPLAY: false,
+        range: {
+            name: "Before School",
+            startsAt: "06:00",
+            endsAt: "08:00",
+        },
+        children: [
+            {
+                name: "Sofia",
+                tasks: ["Shoes", "Backpack"],
+            },
+        ],
+    })
+})
+
+test("skips display outside configured ranges", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date("2026-07-06T14:00:00.000Z"))
+    const config: KidsScheduleConfig = {
+        kids: [
+            {
+                id: "sofia-0",
+                name: "Sofia",
+            },
+        ],
+        ranges: [
+            {
+                name: "Before School",
+                startsAt: "06:00",
+                endsAt: "08:00",
+                tasksByKidId: {
+                    "sofia-0": ["Shoes", "Backpack"],
+                },
+            },
+        ],
+    }
 
-    const {data, init} = loader()
+    const {data, init} = await loader(
+        createLoaderArgs(createD1Mock({value: JSON.stringify(config)})),
+    )
 
     expect(init).toMatchObject({status: 200})
     expect(data).toEqual({

@@ -1,7 +1,8 @@
-import {data} from "react-router"
+import {data, type LoaderFunctionArgs} from "react-router"
 
 import {kidsSchedules} from "~/data"
-import type {Range} from "~/types"
+import {getKidsScheduleConfig} from "~/kids-schedules.server"
+import type {KidsScheduleConfig, Range} from "~/types"
 
 const TIME_ZONE = "America/Chicago"
 
@@ -24,14 +25,40 @@ const getRangeDetails = (range: Range) => {
     return rangeDetails
 }
 
-const getCurrentRange = (date = new Date()) => {
+const getCurrentRange = (
+    date = new Date(),
+    ranges: Range[] = kidsSchedules.ranges,
+) => {
     const time = getTime(date)
 
-    return kidsSchedules.ranges.find(range => isCurrentRange(range, time))
+    return ranges.find(range => isCurrentRange(range, time))
 }
 
-const loader = () => {
-    const range = getCurrentRange()
+const toRanges = (config: KidsScheduleConfig): Range[] => {
+    return config.ranges.map(range => ({
+        name: range.name,
+        startsAt: range.startsAt,
+        endsAt: range.endsAt,
+        children: config.kids.map(kid => ({
+            name: kid.name,
+            tasks: range.tasksByKidId[kid.id] ?? [],
+        })),
+    }))
+}
+
+const getRanges = async (db: D1Database) => {
+    const config = await getKidsScheduleConfig(db)
+
+    if (!config) {
+        return []
+    }
+
+    return toRanges(config)
+}
+
+const loader = async ({context}: LoaderFunctionArgs) => {
+    const ranges = await getRanges(context.cloudflare.env.DB)
+    const range = getCurrentRange(new Date(), ranges)
 
     if (!range) {
         return data(
@@ -54,4 +81,4 @@ const loader = () => {
     )
 }
 
-export {getCurrentRange, loader}
+export {getCurrentRange, loader, toRanges}
