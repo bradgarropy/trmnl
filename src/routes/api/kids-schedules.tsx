@@ -1,6 +1,5 @@
 import {data, type LoaderFunctionArgs} from "react-router"
 
-import {kidsSchedules} from "~/data"
 import {getKidsScheduleConfig} from "~/kids-schedules.server"
 import type {KidsScheduleConfig, Range} from "~/types"
 
@@ -25,10 +24,7 @@ const getRangeDetails = (range: Range) => {
     return rangeDetails
 }
 
-const getCurrentRange = (
-    date = new Date(),
-    ranges: Range[] = kidsSchedules.ranges,
-) => {
+const getCurrentRange = (date = new Date(), ranges: Range[]) => {
     const time = getTime(date)
 
     return ranges.find(range => isCurrentRange(range, time))

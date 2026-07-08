@@ -1,13 +1,45 @@
 import {render, screen, waitFor} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import {type ActionFunction,createRoutesStub} from "react-router"
+import {type ActionFunction, createRoutesStub} from "react-router"
 import {expect, test, vi} from "vitest"
 
-import {kidsSchedules} from "~/data"
 import Route, {createConfig} from "~/routes/kids-schedules"
-import type {KidsScheduleConfig} from "~/types"
+import type {KidsScheduleConfig, Range} from "~/types"
 
-const config = createConfig(kidsSchedules.ranges)
+const ranges: [Range, ...Range[]] = [
+    {
+        name: "Morning",
+        startsAt: "06:00",
+        endsAt: "08:00",
+        children: [
+            {
+                name: "Sofia",
+                tasks: ["Restroom", "Brush Teeth", "Brush Hair", "Make Bed"],
+            },
+            {
+                name: "Justin",
+                tasks: ["Restroom", "Brush Teeth", "Brush Hair", "Make Bed"],
+            },
+        ],
+    },
+    {
+        name: "Night",
+        startsAt: "19:00",
+        endsAt: "21:00",
+        children: [
+            {
+                name: "Sofia",
+                tasks: ["Pajamas", "Brush Teeth", "Floss Teeth", "Restroom"],
+            },
+            {
+                name: "Justin",
+                tasks: ["Pajamas", "Brush Teeth", "Floss Teeth", "Restroom"],
+            },
+        ],
+    },
+]
+
+const config = createConfig(ranges)
 
 const renderRoute = (
     routeConfig: KidsScheduleConfig | null = config,

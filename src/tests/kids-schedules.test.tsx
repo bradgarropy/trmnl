@@ -2,7 +2,40 @@ import type {LoaderFunctionArgs} from "react-router"
 import {afterEach, expect, test, vi} from "vitest"
 
 import {getCurrentRange, loader} from "~/routes/api/kids-schedules"
-import type {KidsScheduleConfig} from "~/types"
+import type {KidsScheduleConfig, Range} from "~/types"
+
+const ranges: [Range, ...Range[]] = [
+    {
+        name: "Morning",
+        startsAt: "06:00",
+        endsAt: "08:00",
+        children: [
+            {
+                name: "Sofia",
+                tasks: ["Restroom", "Brush Teeth", "Brush Hair", "Make Bed"],
+            },
+            {
+                name: "Justin",
+                tasks: ["Restroom", "Brush Teeth", "Brush Hair", "Make Bed"],
+            },
+        ],
+    },
+    {
+        name: "Night",
+        startsAt: "19:00",
+        endsAt: "21:00",
+        children: [
+            {
+                name: "Sofia",
+                tasks: ["Pajamas", "Brush Teeth", "Floss Teeth", "Restroom"],
+            },
+            {
+                name: "Justin",
+                tasks: ["Pajamas", "Brush Teeth", "Floss Teeth", "Restroom"],
+            },
+        ],
+    },
+]
 
 afterEach(() => {
     vi.useRealTimers()
@@ -42,7 +75,7 @@ test("skips display when config does not exist", async () => {
 })
 
 test("returns the night kids schedule", () => {
-    const range = getCurrentRange(new Date("2026-07-07T00:30:00.000Z"))
+    const range = getCurrentRange(new Date("2026-07-07T00:30:00.000Z"), ranges)
 
     expect(range).toMatchObject({
         name: "Night",
@@ -139,7 +172,7 @@ test.each([
     ["20:59", "2026-07-07T01:59:00.000Z", "Night"],
     ["21:00", "2026-07-07T02:00:00.000Z", undefined],
 ])("returns the correct range at %s", (_, date, expectedRange) => {
-    const range = getCurrentRange(new Date(date))
+    const range = getCurrentRange(new Date(date), ranges)
 
     expect(range?.name).toBe(expectedRange)
 })
