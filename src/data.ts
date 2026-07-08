@@ -1,7 +1,7 @@
-import type {Period} from "~/types"
+import type {Range} from "~/types"
 
-const kidsSchedules: {periods: [Period, ...Period[]]} = {
-    periods: [
+const kidsSchedules: {ranges: [Range, ...Range[]]} = {
+    ranges: [
         {
             name: "Morning",
             startsAt: "06:00",

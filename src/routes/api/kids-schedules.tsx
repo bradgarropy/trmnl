@@ -1,7 +1,7 @@
 import {data} from "react-router"
 
 import {kidsSchedules} from "~/data"
-import type {Period} from "~/types"
+import type {Range} from "~/types"
 
 const TIME_ZONE = "America/Chicago"
 
@@ -14,30 +14,30 @@ const getTime = (date: Date) => {
     }).format(date)
 }
 
-const isCurrentPeriod = (period: Period, time: string) => {
-    return time >= period.startsAt && time < period.endsAt
+const isCurrentRange = (range: Range, time: string) => {
+    return time >= range.startsAt && time < range.endsAt
 }
 
-const getPeriodDetails = (period: Period) => {
-    const {children, ...periodDetails} = period
+const getRangeDetails = (range: Range) => {
+    const {children, ...rangeDetails} = range
 
-    return periodDetails
+    return rangeDetails
 }
 
-const getCurrentPeriod = (date = new Date()) => {
+const getCurrentRange = (date = new Date()) => {
     const time = getTime(date)
 
-    return kidsSchedules.periods.find(period => isCurrentPeriod(period, time))
+    return kidsSchedules.ranges.find(range => isCurrentRange(range, time))
 }
 
 const loader = () => {
-    const period = getCurrentPeriod()
+    const range = getCurrentRange()
 
-    if (!period) {
+    if (!range) {
         return data(
             {
                 TRMNL_SKIP_DISPLAY: true,
-                period: null,
+                range: null,
                 children: [],
             },
             {status: 200},
@@ -47,11 +47,11 @@ const loader = () => {
     return data(
         {
             TRMNL_SKIP_DISPLAY: false,
-            period: getPeriodDetails(period),
-            children: period.children,
+            range: getRangeDetails(range),
+            children: range.children,
         },
         {status: 200},
     )
 }
 
-export {getCurrentPeriod, loader}
+export {getCurrentRange, loader}

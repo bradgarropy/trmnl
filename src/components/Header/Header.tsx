@@ -9,11 +9,7 @@ const Header = () => {
                 rel="noreferrer"
                 target="_blank"
             >
-                <img
-                    alt=""
-                    className="size-8"
-                    src={trmnlLogoUrl}
-                />
+                <img alt="" className="size-8" src={trmnlLogoUrl} />
             </a>
 
             <a

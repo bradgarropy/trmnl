@@ -3,11 +3,11 @@ type Child = {
     tasks: string[]
 }
 
-type Period = {
+type Range = {
     name: string
     startsAt: string
     endsAt: string
     children: Child[]
 }
 
-export type {Child, Period}
+export type {Child, Range}

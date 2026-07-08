@@ -38,12 +38,12 @@ const CardTitle = ({
     )
 }
 
-const CardDescription = ({
-    className,
-    ...props
-}: React.ComponentProps<"p">) => {
+const CardDescription = ({className, ...props}: React.ComponentProps<"p">) => {
     return (
-        <p className={cn("text-muted-foreground text-sm", className)} {...props} />
+        <p
+            className={cn("text-muted-foreground text-sm", className)}
+            {...props}
+        />
     )
 }
 

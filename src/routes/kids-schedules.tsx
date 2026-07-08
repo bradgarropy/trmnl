@@ -5,14 +5,14 @@ import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
 import {Label} from "~/components/ui/label"
 import {kidsSchedules} from "~/data"
-import type {Child, Period} from "~/types"
+import type {Child, Range} from "~/types"
 
 type Kid = {
     id: string
     name: string
 }
 
-type PeriodConfig = {
+type RangeConfig = {
     name: string
     startsAt: string
     endsAt: string
@@ -21,7 +21,7 @@ type PeriodConfig = {
 
 type ScheduleConfig = {
     kids: Kid[]
-    periods: PeriodConfig[]
+    ranges: RangeConfig[]
 }
 
 const createId = (value: string, index: number) => {
@@ -35,7 +35,7 @@ const createKid = (name = "", index = Date.now()): Kid => {
     }
 }
 
-const createPeriod = (kids: Kid[]): PeriodConfig => {
+const createRange = (kids: Kid[]): RangeConfig => {
     return {
         name: "",
         startsAt: "06:00",
@@ -44,9 +44,9 @@ const createPeriod = (kids: Kid[]): PeriodConfig => {
     }
 }
 
-const getUniqueChildren = (periods: Period[]) => {
-    return periods.reduce<Child[]>((children, period) => {
-        for (const child of period.children) {
+const getUniqueChildren = (ranges: Range[]) => {
+    return ranges.reduce<Child[]>((children, range) => {
+        for (const child of range.children) {
             const exists = children.some(
                 currentChild => currentChild.name === child.name,
             )
@@ -60,20 +60,20 @@ const getUniqueChildren = (periods: Period[]) => {
     }, [])
 }
 
-const createConfig = (periods: Period[]): ScheduleConfig => {
-    const kids = getUniqueChildren(periods).map((child, index) =>
+const createConfig = (ranges: Range[]): ScheduleConfig => {
+    const kids = getUniqueChildren(ranges).map((child, index) =>
         createKid(child.name, index),
     )
 
     return {
         kids,
-        periods: periods.map(period => ({
-            name: period.name,
-            startsAt: period.startsAt,
-            endsAt: period.endsAt,
+        ranges: ranges.map(range => ({
+            name: range.name,
+            startsAt: range.startsAt,
+            endsAt: range.endsAt,
             tasksByKidId: Object.fromEntries(
                 kids.map(kid => {
-                    const child = period.children.find(
+                    const child = range.children.find(
                         currentChild => currentChild.name === kid.name,
                     )
 
@@ -86,7 +86,7 @@ const createConfig = (periods: Period[]): ScheduleConfig => {
 
 const Route = () => {
     const [config, setConfig] = useState(() =>
-        createConfig(kidsSchedules.periods),
+        createConfig(kidsSchedules.ranges),
     )
 
     const updateKid = (kidIndex: number, name: string) => {
@@ -104,9 +104,9 @@ const Route = () => {
 
             return {
                 kids: [...currentConfig.kids, kid],
-                periods: currentConfig.periods.map(period => ({
-                    ...period,
-                    tasksByKidId: {...period.tasksByKidId, [kid.id]: [""]},
+                ranges: currentConfig.ranges.map(range => ({
+                    ...range,
+                    tasksByKidId: {...range.tasksByKidId, [kid.id]: [""]},
                 })),
             }
         })
@@ -115,65 +115,62 @@ const Route = () => {
     const removeKid = (kidId: string) => {
         setConfig(currentConfig => ({
             kids: currentConfig.kids.filter(kid => kid.id !== kidId),
-            periods: currentConfig.periods.map(period => {
+            ranges: currentConfig.ranges.map(range => {
                 const {[kidId]: removedTasks, ...tasksByKidId} =
-                    period.tasksByKidId
+                    range.tasksByKidId
                 void removedTasks
 
-                return {...period, tasksByKidId}
+                return {...range, tasksByKidId}
             }),
         }))
     }
 
-    const updatePeriod = (
-        periodIndex: number,
-        updates: Partial<Omit<PeriodConfig, "tasksByKidId">>,
+    const updateRange = (
+        rangeIndex: number,
+        updates: Partial<Omit<RangeConfig, "tasksByKidId">>,
     ) => {
         setConfig(currentConfig => ({
             ...currentConfig,
-            periods: currentConfig.periods.map((period, index) =>
-                index === periodIndex ? {...period, ...updates} : period,
+            ranges: currentConfig.ranges.map((range, index) =>
+                index === rangeIndex ? {...range, ...updates} : range,
             ),
         }))
     }
 
-    const addPeriod = () => {
+    const addRange = () => {
         setConfig(currentConfig => ({
             ...currentConfig,
-            periods: [
-                ...currentConfig.periods,
-                createPeriod(currentConfig.kids),
-            ],
+            ranges: [...currentConfig.ranges, createRange(currentConfig.kids)],
         }))
     }
 
-    const removePeriod = (periodIndex: number) => {
+    const removeRange = (rangeIndex: number) => {
         setConfig(currentConfig => ({
             ...currentConfig,
-            periods: currentConfig.periods.filter(
-                (_, index) => index !== periodIndex,
+            ranges: currentConfig.ranges.filter(
+                (_, index) => index !== rangeIndex,
             ),
         }))
     }
 
     const updateTask = (
-        periodIndex: number,
+        rangeIndex: number,
         kidId: string,
         taskIndex: number,
         task: string,
     ) => {
         setConfig(currentConfig => ({
             ...currentConfig,
-            periods: currentConfig.periods.map((period, index) => {
-                if (index !== periodIndex) {
-                    return period
+            ranges: currentConfig.ranges.map((range, index) => {
+                if (index !== rangeIndex) {
+                    return range
                 }
 
                 return {
-                    ...period,
+                    ...range,
                     tasksByKidId: {
-                        ...period.tasksByKidId,
-                        [kidId]: period.tasksByKidId[kidId].map(
+                        ...range.tasksByKidId,
+                        [kidId]: range.tasksByKidId[kidId].map(
                             (currentTask, currentTaskIndex) =>
                                 currentTaskIndex === taskIndex
                                     ? task
@@ -185,43 +182,43 @@ const Route = () => {
         }))
     }
 
-    const addTask = (periodIndex: number, kidId: string) => {
+    const addTask = (rangeIndex: number, kidId: string) => {
         setConfig(currentConfig => ({
             ...currentConfig,
-            periods: currentConfig.periods.map((period, index) =>
-                index === periodIndex
+            ranges: currentConfig.ranges.map((range, index) =>
+                index === rangeIndex
                     ? {
-                          ...period,
+                          ...range,
                           tasksByKidId: {
-                              ...period.tasksByKidId,
-                              [kidId]: [...period.tasksByKidId[kidId], ""],
+                              ...range.tasksByKidId,
+                              [kidId]: [...range.tasksByKidId[kidId], ""],
                           },
                       }
-                    : period,
+                    : range,
             ),
         }))
     }
 
     const removeTask = (
-        periodIndex: number,
+        rangeIndex: number,
         kidId: string,
         taskIndex: number,
     ) => {
         setConfig(currentConfig => ({
             ...currentConfig,
-            periods: currentConfig.periods.map((period, index) =>
-                index === periodIndex
+            ranges: currentConfig.ranges.map((range, index) =>
+                index === rangeIndex
                     ? {
-                          ...period,
+                          ...range,
                           tasksByKidId: {
-                              ...period.tasksByKidId,
-                              [kidId]: period.tasksByKidId[kidId].filter(
+                              ...range.tasksByKidId,
+                              [kidId]: range.tasksByKidId[kidId].filter(
                                   (_, currentTaskIndex) =>
                                       currentTaskIndex !== taskIndex,
                               ),
                           },
                       }
-                    : period,
+                    : range,
             ),
         }))
     }
@@ -235,7 +232,7 @@ const Route = () => {
                     <h2 className="text-2xl font-bold">Kids Schedules</h2>
                     <p className="mt-2 text-muted-foreground">
                         Configure kids once, then customize their tasks for each
-                        display period.
+                        display range.
                     </p>
                 </div>
 
@@ -244,7 +241,7 @@ const Route = () => {
                         <div>
                             <h3 className="text-xl font-semibold">Kids</h3>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Kid names are shared across every period.
+                                Kid names are shared across every range.
                             </p>
                         </div>
 
@@ -292,7 +289,7 @@ const Route = () => {
 
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h3 className="text-xl font-semibold">Periods</h3>
+                        <h3 className="text-xl font-semibold">Ranges</h3>
                         <p className="mt-1 text-sm text-muted-foreground">
                             Set the display windows, then customize tasks for
                             each kid.
@@ -303,17 +300,17 @@ const Route = () => {
                         className="w-full sm:w-auto"
                         variant="secondary"
                         type="button"
-                        onClick={addPeriod}
+                        onClick={addRange}
                     >
-                        Add Period
+                        Add Range
                     </Button>
                 </div>
 
                 <div className="flex flex-col gap-8">
-                    {config.periods.map((period, periodIndex) => (
+                    {config.ranges.map((range, rangeIndex) => (
                         <section
                             className="border-border/60 flex flex-col gap-7 rounded-xl border bg-card p-4 shadow-xs sm:p-5"
-                            key={periodIndex}
+                            key={rangeIndex}
                         >
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-end gap-3">
@@ -321,9 +318,9 @@ const Route = () => {
                                         <Label className="col-span-2 lg:col-span-1">
                                             Name
                                             <Input
-                                                value={period.name}
+                                                value={range.name}
                                                 onChange={event =>
-                                                    updatePeriod(periodIndex, {
+                                                    updateRange(rangeIndex, {
                                                         name: event.target
                                                             .value,
                                                     })
@@ -335,9 +332,9 @@ const Route = () => {
                                             Starts
                                             <Input
                                                 type="time"
-                                                value={period.startsAt}
+                                                value={range.startsAt}
                                                 onChange={event =>
-                                                    updatePeriod(periodIndex, {
+                                                    updateRange(rangeIndex, {
                                                         startsAt:
                                                             event.target.value,
                                                     })
@@ -349,9 +346,9 @@ const Route = () => {
                                             Ends
                                             <Input
                                                 type="time"
-                                                value={period.endsAt}
+                                                value={range.endsAt}
                                                 onChange={event =>
-                                                    updatePeriod(periodIndex, {
+                                                    updateRange(rangeIndex, {
                                                         endsAt: event.target
                                                             .value,
                                                     })
@@ -361,14 +358,12 @@ const Route = () => {
                                     </div>
 
                                     <Button
-                                        aria-label={`Remove ${period.name || "period"}`}
+                                        aria-label={`Remove ${range.name || "range"}`}
                                         className="text-muted-foreground hover:text-muted-foreground"
                                         size="icon"
                                         variant="outline"
                                         type="button"
-                                        onClick={() =>
-                                            removePeriod(periodIndex)
-                                        }
+                                        onClick={() => removeRange(rangeIndex)}
                                     >
                                         <Trash2
                                             aria-hidden="true"
@@ -380,7 +375,7 @@ const Route = () => {
 
                             <div className="grid gap-6 lg:grid-cols-2">
                                 {config.kids.map(kid => {
-                                    const tasks = period.tasksByKidId[kid.id]
+                                    const tasks = range.tasksByKidId[kid.id]
 
                                     return (
                                         <div
@@ -404,12 +399,12 @@ const Route = () => {
                                                             key={taskIndex}
                                                         >
                                                             <Input
-                                                                aria-label={`${kid.name || "Kid"} ${period.name || "period"} task ${taskIndex + 1}`}
+                                                                aria-label={`${kid.name || "Kid"} ${range.name || "range"} task ${taskIndex + 1}`}
                                                                 className="flex-1"
                                                                 value={task}
                                                                 onChange={event =>
                                                                     updateTask(
-                                                                        periodIndex,
+                                                                        rangeIndex,
                                                                         kid.id,
                                                                         taskIndex,
                                                                         event
@@ -427,7 +422,7 @@ const Route = () => {
                                                                 type="button"
                                                                 onClick={() =>
                                                                     removeTask(
-                                                                        periodIndex,
+                                                                        rangeIndex,
                                                                         kid.id,
                                                                         taskIndex,
                                                                     )
@@ -447,7 +442,7 @@ const Route = () => {
                                                     type="button"
                                                     onClick={() =>
                                                         addTask(
-                                                            periodIndex,
+                                                            rangeIndex,
                                                             kid.id,
                                                         )
                                                     }

@@ -1,6 +1,6 @@
 import {afterEach, expect, test, vi} from "vitest"
 
-import {getCurrentPeriod, loader} from "~/routes/api/kids-schedules"
+import {getCurrentRange, loader} from "~/routes/api/kids-schedules"
 
 afterEach(() => {
     vi.useRealTimers()
@@ -15,7 +15,7 @@ test("returns the morning kids schedule", () => {
     expect(init).toMatchObject({status: 200})
     expect(data).toEqual({
         TRMNL_SKIP_DISPLAY: false,
-        period: {
+        range: {
             name: "Morning",
             startsAt: "06:00",
             endsAt: "08:00",
@@ -34,16 +34,16 @@ test("returns the morning kids schedule", () => {
 })
 
 test("returns the night kids schedule", () => {
-    const period = getCurrentPeriod(new Date("2026-07-07T00:30:00.000Z"))
+    const range = getCurrentRange(new Date("2026-07-07T00:30:00.000Z"))
 
-    expect(period).toMatchObject({
+    expect(range).toMatchObject({
         name: "Night",
         startsAt: "19:00",
         endsAt: "21:00",
     })
 })
 
-test("skips display outside configured periods", () => {
+test("skips display outside configured ranges", () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date("2026-07-06T14:00:00.000Z"))
 
@@ -52,7 +52,7 @@ test("skips display outside configured periods", () => {
     expect(init).toMatchObject({status: 200})
     expect(data).toEqual({
         TRMNL_SKIP_DISPLAY: true,
-        period: null,
+        range: null,
         children: [],
     })
 })
@@ -66,8 +66,8 @@ test.each([
     ["19:00", "2026-07-07T00:00:00.000Z", "Night"],
     ["20:59", "2026-07-07T01:59:00.000Z", "Night"],
     ["21:00", "2026-07-07T02:00:00.000Z", undefined],
-])("returns the correct period at %s", (_, date, expectedPeriod) => {
-    const period = getCurrentPeriod(new Date(date))
+])("returns the correct range at %s", (_, date, expectedRange) => {
+    const range = getCurrentRange(new Date(date))
 
-    expect(period?.name).toBe(expectedPeriod)
+    expect(range?.name).toBe(expectedRange)
 })

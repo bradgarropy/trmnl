@@ -35,12 +35,12 @@ test("edits schedule fields locally", async () => {
     expect(screen.getByDisplayValue("Before School")).toBeVisible()
 })
 
-test("adds and removes periods, kids, and tasks", async () => {
+test("adds and removes ranges, kids, and tasks", async () => {
     const user = userEvent.setup()
 
     render(<Route />)
 
-    await user.click(screen.getByRole("button", {name: "Add Period"}))
+    await user.click(screen.getByRole("button", {name: "Add Range"}))
     expect(screen.getAllByDisplayValue("06:00")).toHaveLength(2)
 
     await user.click(screen.getByRole("button", {name: "Add Kid"}))
