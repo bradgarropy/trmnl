@@ -5,24 +5,7 @@ import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
 import {Label} from "~/components/ui/label"
 import {kidsSchedules} from "~/data"
-import type {Child, Range} from "~/types"
-
-type Kid = {
-    id: string
-    name: string
-}
-
-type RangeConfig = {
-    name: string
-    startsAt: string
-    endsAt: string
-    tasksByKidId: Record<string, string[]>
-}
-
-type ScheduleConfig = {
-    kids: Kid[]
-    ranges: RangeConfig[]
-}
+import type {Child, Kid, KidsScheduleConfig, Range, RangeConfig} from "~/types"
 
 const createId = (value: string, index: number) => {
     return `${value.toLowerCase().replaceAll(/\s+/g, "-")}-${index}`
@@ -60,7 +43,7 @@ const getUniqueChildren = (ranges: Range[]) => {
     }, [])
 }
 
-const createConfig = (ranges: Range[]): ScheduleConfig => {
+const createConfig = (ranges: Range[]): KidsScheduleConfig => {
     const kids = getUniqueChildren(ranges).map((child, index) =>
         createKid(child.name, index),
     )

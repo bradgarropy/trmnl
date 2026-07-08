@@ -12,11 +12,7 @@ const App = () => {
             <head>
                 <title>trmnl</title>
                 <link rel="stylesheet" href={tailwindStyles} />
-                <link
-                    rel="icon"
-                    type="image/svg+xml"
-                    href={TRMNL_LOGO_URL}
-                />
+                <link rel="icon" type="image/svg+xml" href={TRMNL_LOGO_URL} />
                 <meta charSet="utf-8" />
 
                 <meta
@@ -57,11 +53,7 @@ export const ErrorBoundary = () => {
             <head>
                 <title>trmnl</title>
                 <link rel="stylesheet" href={tailwindStyles} />
-                <link
-                    rel="icon"
-                    type="image/svg+xml"
-                    href={TRMNL_LOGO_URL}
-                />
+                <link rel="icon" type="image/svg+xml" href={TRMNL_LOGO_URL} />
                 <meta charSet="utf-8" />
 
                 <meta
