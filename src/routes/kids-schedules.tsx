@@ -370,54 +370,23 @@ const Route = () => {
                             className="border-border/60 flex flex-col gap-7 rounded-xl border bg-card p-4 shadow-xs sm:p-5"
                             key={rangeIndex}
                         >
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-end gap-3">
-                                    <div className="grid flex-1 grid-cols-2 gap-4 lg:grid-cols-3">
-                                        <Label className="col-span-2 lg:col-span-1">
-                                            Name
-                                            <Input
-                                                value={range.name}
-                                                onChange={event =>
-                                                    updateRange(rangeIndex, {
-                                                        name: event.target
-                                                            .value,
-                                                    })
-                                                }
-                                            />
-                                        </Label>
-
-                                        <Label>
-                                            Starts
-                                            <Input
-                                                type="time"
-                                                value={range.startsAt}
-                                                onChange={event =>
-                                                    updateRange(rangeIndex, {
-                                                        startsAt:
-                                                            event.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </Label>
-
-                                        <Label>
-                                            Ends
-                                            <Input
-                                                type="time"
-                                                value={range.endsAt}
-                                                onChange={event =>
-                                                    updateRange(rangeIndex, {
-                                                        endsAt: event.target
-                                                            .value,
-                                                    })
-                                                }
-                                            />
-                                        </Label>
-                                    </div>
+                            <div className="grid gap-4 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
+                                <div className="flex items-end gap-3 sm:contents">
+                                    <Label className="flex-1">
+                                        Name
+                                        <Input
+                                            value={range.name}
+                                            onChange={event =>
+                                                updateRange(rangeIndex, {
+                                                    name: event.target.value,
+                                                })
+                                            }
+                                        />
+                                    </Label>
 
                                     <Button
                                         aria-label={`Remove ${range.name || "range"}`}
-                                        className="text-muted-foreground hover:text-muted-foreground"
+                                        className="text-muted-foreground hover:text-muted-foreground sm:order-4"
                                         size="icon"
                                         variant="outline"
                                         type="button"
@@ -428,6 +397,35 @@ const Route = () => {
                                             className="size-4"
                                         />
                                     </Button>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 sm:contents">
+                                    <Label className="sm:order-2">
+                                        Starts
+                                        <Input
+                                            type="time"
+                                            value={range.startsAt}
+                                            onChange={event =>
+                                                updateRange(rangeIndex, {
+                                                    startsAt:
+                                                        event.target.value,
+                                                })
+                                            }
+                                        />
+                                    </Label>
+
+                                    <Label className="sm:order-3">
+                                        Ends
+                                        <Input
+                                            type="time"
+                                            value={range.endsAt}
+                                            onChange={event =>
+                                                updateRange(rangeIndex, {
+                                                    endsAt: event.target.value,
+                                                })
+                                            }
+                                        />
+                                    </Label>
                                 </div>
                             </div>
 
