@@ -399,10 +399,11 @@ const Route = () => {
                                     </Button>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 sm:contents">
-                                    <Label className="sm:order-2">
+                                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 sm:contents">
+                                    <Label className="min-w-0 sm:order-2">
                                         Starts
                                         <Input
+                                            className="min-w-0 appearance-none px-2 sm:px-3"
                                             type="time"
                                             value={range.startsAt}
                                             onChange={event =>
@@ -414,9 +415,10 @@ const Route = () => {
                                         />
                                     </Label>
 
-                                    <Label className="sm:order-3">
+                                    <Label className="min-w-0 sm:order-3">
                                         Ends
                                         <Input
+                                            className="min-w-0 appearance-none px-2 sm:px-3"
                                             type="time"
                                             value={range.endsAt}
                                             onChange={event =>
