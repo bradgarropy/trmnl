@@ -7,6 +7,7 @@ import {afterEach, expect, test, vi} from "vitest"
 vi.mock("sonner", () => ({
     toast: {
         error: vi.fn(),
+        info: vi.fn(),
         success: vi.fn(),
     },
 }))
@@ -89,6 +90,7 @@ test("renders the kids schedules editor", async () => {
     expect(screen.getAllByRole("heading", {name: "Justin"})).toHaveLength(2)
     expect(screen.getAllByDisplayValue("Make Bed")).toHaveLength(2)
     expect(screen.getAllByDisplayValue("Floss Teeth")).toHaveLength(2)
+    expect(screen.getByRole("button", {name: "Reset"})).toBeDisabled()
     expect(screen.getByRole("button", {name: "Save"})).toBeDisabled()
 })
 
@@ -102,7 +104,36 @@ test("edits schedule fields locally", async () => {
     await user.type(morning, "Before School")
 
     expect(screen.getByDisplayValue("Before School")).toBeVisible()
+    expect(screen.getByRole("button", {name: "Reset"})).toBeEnabled()
     expect(screen.getByRole("button", {name: "Save"})).toBeEnabled()
+})
+
+test("resets local edits to the saved config", async () => {
+    const user = userEvent.setup()
+    const {action} = renderRoute()
+
+    const morning = await screen.findByDisplayValue("Morning")
+    await user.clear(morning)
+    await user.type(morning, "Before School")
+    await user.click(screen.getByRole("button", {name: "Reset"}))
+
+    expect(screen.getByDisplayValue("Morning")).toBeVisible()
+    expect(screen.queryByDisplayValue("Before School")).not.toBeInTheDocument()
+    expect(screen.getByRole("button", {name: "Reset"})).toBeDisabled()
+    expect(screen.getByRole("button", {name: "Save"})).toBeDisabled()
+    expect(action).not.toHaveBeenCalled()
+    expect(toast.info).toHaveBeenCalledWith(
+        "Reset",
+        expect.objectContaining({icon: expect.any(Object)}),
+    )
+
+    const resetToastOptions = vi.mocked(toast.info).mock.calls[0]?.[1] as {
+        icon?: {props?: {className?: string}}
+    }
+
+    expect(resetToastOptions.icon?.props?.className).toContain(
+        "text-foreground",
+    )
 })
 
 test("adds and removes ranges, kids, and tasks", async () => {
@@ -180,7 +211,18 @@ test("saves the edited config", async () => {
         }),
         success: true,
     })
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Saved"))
+    await waitFor(() =>
+        expect(toast.success).toHaveBeenCalledWith(
+            "Saved",
+            expect.objectContaining({icon: expect.any(Object)}),
+        ),
+    )
+
+    const savedToastOptions = vi.mocked(toast.success).mock.calls[0]?.[1] as {
+        icon?: {props?: {className?: string}}
+    }
+
+    expect(savedToastOptions.icon?.props?.className).toContain("text-primary")
     expect(screen.getByRole("button", {name: "Save"})).toBeDisabled()
 })
 

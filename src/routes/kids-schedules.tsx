@@ -1,4 +1,4 @@
-import {Trash2} from "lucide-react"
+import {CheckCircle2, Trash2, Undo2} from "lucide-react"
 import {useEffect, useRef, useState} from "react"
 import {
     type ActionFunctionArgs,
@@ -131,7 +131,9 @@ const Route = () => {
             }
 
             submittedConfig.current = null
-            toast.success("Saved")
+            toast.success("Saved", {
+                icon: <CheckCircle2 className="text-primary size-4" />,
+            })
             return
         }
 
@@ -279,6 +281,13 @@ const Route = () => {
 
         submittedConfig.current = config
         submit({config: serializeConfig(config)}, {method: "post"})
+    }
+
+    const resetConfig = () => {
+        setConfig(savedConfig)
+        toast.info("Reset", {
+            icon: <Undo2 className="text-foreground size-4" />,
+        })
     }
 
     return (
@@ -516,7 +525,17 @@ const Route = () => {
                     ))}
                 </div>
 
-                <div className="bg-background fixed inset-x-0 bottom-0 flex items-center justify-end p-4 sm:static sm:bg-transparent sm:p-0">
+                <div className="bg-background fixed inset-x-0 bottom-0 grid grid-cols-2 gap-3 p-4 sm:static sm:flex sm:justify-end sm:bg-transparent sm:p-0">
+                    <Button
+                        className="w-full sm:w-auto"
+                        variant="outline"
+                        type="button"
+                        disabled={isSaving || !isDirty}
+                        onClick={resetConfig}
+                    >
+                        Reset
+                    </Button>
+
                     <Button
                         className="w-full sm:w-auto"
                         type="button"
