@@ -43,6 +43,7 @@ const config = defineConfig({
         tsconfigPaths: true,
     },
     server: {
+        allowedHosts: [".trycloudflare.com"],
         open: true,
         port: 3000,
     },
