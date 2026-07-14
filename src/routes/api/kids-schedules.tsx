@@ -2,6 +2,7 @@ import {data, type LoaderFunctionArgs} from "react-router"
 
 import {getKidsScheduleConfig} from "~/kids-schedules.server"
 import type {KidsScheduleConfig, Range} from "~/types"
+import {formatTime} from "~/utils/format"
 
 const TIME_ZONE = "America/Chicago"
 
@@ -21,7 +22,11 @@ const isCurrentRange = (range: Range, time: string) => {
 const getRangeDetails = (range: Range) => {
     const {children, ...rangeDetails} = range
 
-    return rangeDetails
+    return {
+        ...rangeDetails,
+        startsAt: formatTime(range.startsAt),
+        endsAt: formatTime(range.endsAt),
+    }
 }
 
 const getCurrentRange = (date = new Date(), ranges: Range[]) => {

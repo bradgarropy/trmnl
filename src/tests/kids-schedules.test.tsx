@@ -86,7 +86,7 @@ test("returns the night kids schedule", () => {
 
 test("returns the kids schedule from D1 when config exists", async () => {
     vi.useFakeTimers()
-    vi.setSystemTime(new Date("2026-07-06T11:30:00.000Z"))
+    vi.setSystemTime(new Date("2026-07-07T00:30:00.000Z"))
 
     const config: KidsScheduleConfig = {
         kids: [
@@ -97,9 +97,9 @@ test("returns the kids schedule from D1 when config exists", async () => {
         ],
         ranges: [
             {
-                name: "Before School",
-                startsAt: "06:00",
-                endsAt: "08:00",
+                name: "Bedtime",
+                startsAt: "19:00",
+                endsAt: "21:00",
                 tasksByKidId: {
                     "sofia-0": ["Shoes", "Backpack"],
                 },
@@ -115,9 +115,9 @@ test("returns the kids schedule from D1 when config exists", async () => {
     expect(data).toEqual({
         TRMNL_SKIP_DISPLAY: false,
         range: {
-            name: "Before School",
-            startsAt: "06:00",
-            endsAt: "08:00",
+            name: "Bedtime",
+            startsAt: "7:00PM",
+            endsAt: "9:00PM",
         },
         children: [
             {
